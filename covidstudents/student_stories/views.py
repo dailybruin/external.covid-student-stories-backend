@@ -21,6 +21,8 @@ class StoryView(View):
 
         schools = request.GET.get("school", None)
         years = request.GET.get("year", None)
+        majors = request.GET.get("major", None)
+        i = request.GET.get("i", 0)
         if schools or years:
             sql_query += " WHERE "
 
@@ -33,8 +35,17 @@ class StoryView(View):
             years = years.split(" ")
             where_queries.append("(" + build_sql_param("year", years) + ")")
 
+        if majors:
+            majors = majors.split(" ")
+            where_queries.append("(" + build_sql_param("major", majors) + ")")
+
+        if i != 0:
+            i = int(i)
+        offset = i * 10
+
         sql_query += " AND ".join(where_queries)
-        sql_query += " ORDER BY timestamp DESC"
+        sql_query += " ORDER BY timestamp DESC OFFSET " + \
+            str(offset) + " ROWS FETCH NEXT 10 ROWS ONLY"
 
         cursor.execute(sql_query)
         return http.JsonResponse(dictfetchall(cursor), safe=False)
