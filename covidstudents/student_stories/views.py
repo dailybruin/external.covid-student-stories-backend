@@ -9,6 +9,11 @@ def dictfetchall(cursor):
     return [dict(zip(columns, row)) for row in cursor.fetchall()]
 
 
+class TestView(View):
+    def get(self, request):
+        return http.HttpResponse("Hello World")
+
+
 class StoryView(View):
     def get(self, request):
         def build_sql_param(field: str, params):
