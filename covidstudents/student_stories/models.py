@@ -43,3 +43,5 @@ class Story(models.Model):
     knowPositive = models.CharField(max_length=1, choices=YES_OR_NO)
     currentLocation = models.CharField(max_length=50)
     responseDoneDifferently = models.TextField(null=True)
+    mediaLinks = models.TextField(null=True)
+    artCredit = models.CharField(max_length=50, null=True)
