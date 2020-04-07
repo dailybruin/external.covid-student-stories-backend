@@ -1,10 +1,11 @@
 from django.shortcuts import render
-from django.views import View
+# from django.views import View
 from django.db import connection
 from django import http
 from django.db.models import Q
 from .models import Story
 from django.core.paginator import Paginator
+from rest_framework.views import APIView
 
 
 def dictfetchall(cursor):
@@ -12,12 +13,12 @@ def dictfetchall(cursor):
     return [dict(zip(columns, row)) for row in cursor.fetchall()]
 
 
-class TestView(View):
+class TestView(APIView):
     def get(self, request):
         return http.HttpResponse("Hello World")
 
 
-class StoryView(View):
+class StoryView(APIView):
     def get(self, request):
         # def build_sql_param(field: str, params):
         #     return " OR ".join([field + " = '" + param.replace("'", "") + "'" for param in params])
@@ -98,7 +99,7 @@ class StoryView(View):
         # return http.JsonResponse(dictfetchall(cursor), safe=False)
 
 
-class CreateStoryView(View):
+class CreateStoryView(APIView):
     def post(self, request):
         # keys = []
         # vals = []
@@ -120,6 +121,6 @@ class CreateStoryView(View):
             return http.JsonResponse({"error": "Invalid post request"})
 
 
-class StatisticsView(View):
+class StatisticsView(APIView):
     def get(self, request):
         return http.JsonResponse({"error": "hi"})

@@ -35,16 +35,15 @@ else:
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DEBUG')
+print(DEBUG)
 
 
-# what domain name of server is.    
+# what domain name of server is.
 ALLOWED_HOSTS = []
 if not DEBUG:
     ALLOWED_HOSTS = [env('SITE_HOST'), ]
 else:
     ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]']
-
-
 
 
 # Application definition
@@ -58,7 +57,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # external dependencies
-    'rest_framework', # REST API Utils
+    'rest_framework',  # REST API Utils
 
     # internal dependencies
     'student_stories'
