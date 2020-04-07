@@ -2,6 +2,9 @@ from django.shortcuts import render
 from django.views import View
 from django.db import connection
 from django import http
+from django.db.models import Q
+from .models import Story
+from django.core.paginator import Paginator
 
 
 def dictfetchall(cursor):
@@ -16,62 +19,107 @@ class TestView(View):
 
 class StoryView(View):
     def get(self, request):
-        def build_sql_param(field: str, params):
-            return " OR ".join([field + " = '" + param.replace("'", "") + "'" for param in params])
+        # def build_sql_param(field: str, params):
+        #     return " OR ".join([field + " = '" + param.replace("'", "") + "'" for param in params])
 
         cursor = connection.cursor()
         param_exists = False
-        sql_query = "SELECT * FROM student_stories_story"
+        # sql_query = "SELECT * FROM student_stories_story"
         where_queries = []
 
         schools = request.GET.get("school", None)
         years = request.GET.get("year", None)
         majors = request.GET.get("major", None)
-        i = request.GET.get("i", 0)
-        if schools or years:
-            sql_query += " WHERE "
+        try:
+            i = max(int(request.GET.get("i", 1)), 1)
+        except:
+            i = 1
 
+        # below this line is using django queries
+        query = Story.objects.all()
         if schools:
             schools = schools.split(" ")
-            where_queries.append(
-                "(" + build_sql_param("school", schools) + ")")
+            school_query = None
+            for school in schools:
+                try:
+                    school_query |= Q(school=school.replace("'", ""))
+                except:
+                    school_query = Q(school=school.replace("'", ""))
+            query = query.filter(school_query)
 
         if years:
             years = years.split(" ")
-            where_queries.append("(" + build_sql_param("year", years) + ")")
+            year_query = None
+            for year in years:
+                try:
+                    year_query |= Q(year=year.replace("'", ""))
+                except:
+                    year_query = Q(year=year.replace("'", ""))
+            query = query.filter(year_query)
 
         if majors:
             majors = majors.split(" ")
-            where_queries.append("(" + build_sql_param("major", majors) + ")")
+            major_query = None
+            for major in majors:
+                try:
+                    major_query |= Q(major=major.replace("'", ""))
+                except:
+                    major_query = Q(major=major.replace("'", ""))
+            query = query.filter(major_query)
 
-        if i != 0:
-            i = int(i)
-        offset = i * 10
+        paginator = Paginator(query, 10)
+        return http.JsonResponse(list(paginator.page(i)), safe=False)
 
-        sql_query += " AND ".join(where_queries)
-        sql_query += " ORDER BY timestamp DESC OFFSET " + \
-            str(offset) + " ROWS FETCH NEXT 10 ROWS ONLY"
+        # if schools or years or majors:
+        #     sql_query += " WHERE "
 
-        cursor.execute(sql_query)
-        return http.JsonResponse(dictfetchall(cursor), safe=False)
+        # if schools:
+        #     schools = schools.split(" ")
+        #     where_queries.append(
+        #         "(" + build_sql_param("school", schools) + ")")
+
+        # if years:
+        #     years = years.split(" ")
+        #     where_queries.append("(" + build_sql_param("year", years) + ")")
+
+        # if majors:
+        #     majors = majors.split(" ")
+        #     where_queries.append("(" + build_sql_param("major", majors) + ")")
+
+        # if i != 0:
+        #     i = int(i)
+        # offset = i * 10
+
+        # sql_query += " AND ".join(where_queries)
+        # sql_query += " ORDER BY timestamp DESC OFFSET " + \
+        #     str(offset) + " ROWS FETCH NEXT 10 ROWS ONLY"
+
+        # cursor.execute(sql_query)
+        # return http.JsonResponse(dictfetchall(cursor), safe=False)
 
 
 class CreateStoryView(View):
     def post(self, request):
-        keys = []
-        vals = []
-        for key, val in request.POST.items():
-            keys.append(key)
-            vals.append(val)
-        vals = ["'" + val.replace("'", "") + "'" for val in vals]
+        # keys = []
+        # vals = []
+        # for key, val in request.POST.items():
+        #     keys.append(key)
+        #     vals.append(val)
+        # vals = ["'" + val.replace("'", "") + "'" for val in vals]
 
-        sql_query = "INSERT INTO student_stories_story (" + ", ".join(
-            keys) + ") VALUES (" + ", ".join(vals) + ")"
+        # sql_query = "INSERT INTO student_stories_story (" + ", ".join(
+        #     keys) + ") VALUES (" + ", ".join(vals) + ")"
 
         try:
-            cursor = connection.cursor()
-            cursor.execute(sql_query)
-            connection.commit()
+            # cursor = connection.cursor()
+            # cursor.execute(sql_query)
+            # connection.commit()
+            Story.objects.create(**request.POST)
             return http.JsonResponse(request.POST)
         except:
             return http.JsonResponse({"error": "Invalid post request"})
+
+
+class StatisticsView(View):
+    def get(self, request):
+        return http.JsonResponse({"error": "hi"})
