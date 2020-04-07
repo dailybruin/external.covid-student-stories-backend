@@ -1,17 +1,10 @@
 from django.shortcuts import render
-# from django.views import View
-from django.db import connection
 from django import http
 from django.db.models import Q
 from django.core import serializers
 from .models import Story
 from django.core.paginator import Paginator
 from rest_framework.views import APIView
-
-
-def dictfetchall(cursor):
-    columns = [col[0] for col in cursor.description]
-    return [dict(zip(columns, row)) for row in cursor.fetchall()]
 
 
 class TestView(APIView):
@@ -21,14 +14,6 @@ class TestView(APIView):
 
 class StoryView(APIView):
     def get(self, request):
-        # def build_sql_param(field: str, params):
-        #     return " OR ".join([field + " = '" + param.replace("'", "") + "'" for param in params])
-
-        cursor = connection.cursor()
-        param_exists = False
-        # sql_query = "SELECT * FROM student_stories_story"
-        where_queries = []
-
         schools = request.GET.get("school", None)
         years = request.GET.get("year", None)
         majors = request.GET.get("major", None)
@@ -37,7 +22,6 @@ class StoryView(APIView):
         except:
             i = 1
 
-        # below this line is using django queries
         query = Story.objects.all()
         if schools:
             schools = schools.split(" ")
@@ -73,49 +57,10 @@ class StoryView(APIView):
         post_list = serializers.serialize('json', list(paginator.page(i)))
         return http.HttpResponse(post_list, content_type="text/json-comment-filtered")
 
-        # if schools or years or majors:
-        #     sql_query += " WHERE "
-
-        # if schools:
-        #     schools = schools.split(" ")
-        #     where_queries.append(
-        #         "(" + build_sql_param("school", schools) + ")")
-
-        # if years:
-        #     years = years.split(" ")
-        #     where_queries.append("(" + build_sql_param("year", years) + ")")
-
-        # if majors:
-        #     majors = majors.split(" ")
-        #     where_queries.append("(" + build_sql_param("major", majors) + ")")
-
-        # if i != 0:
-        #     i = int(i)
-        # offset = i * 10
-
-        # sql_query += " AND ".join(where_queries)
-        # sql_query += " ORDER BY timestamp DESC OFFSET " + \
-        #     str(offset) + " ROWS FETCH NEXT 10 ROWS ONLY"
-
-        # cursor.execute(sql_query)
-        # return http.JsonResponse(dictfetchall(cursor), safe=False)
-
 
 class CreateStoryView(APIView):
     def post(self, request):
-        # keys = []
-        # vals = []
-        # for key, val in request.POST.items():
-        #     keys.append(key)
-        #     vals.append(val)
-        # vals = ["'" + val.replace("'", "") + "'" for val in vals]
-
-        # sql_query = "INSERT INTO student_stories_story (" + ", ".join(
-        #     keys) + ") VALUES (" + ", ".join(vals) + ")"
         try:
-            # cursor = connection.cursor()
-            # cursor.execute(sql_query)
-            # connection.commit()
             Story.objects.create(**request.data)
             return http.JsonResponse(request.data)
         except:
@@ -124,4 +69,52 @@ class CreateStoryView(APIView):
 
 class StatisticsView(APIView):
     def get(self, request):
-        return http.JsonResponse({"error": "hi"})
+        response = {'feelings': {}, 'curr_location_breakdown': {}}
+
+        num_know_positives = Story.objects.filter(knowPositive="Y").count()
+        response["numKnowPositives"] = num_know_positives
+
+        num_stories = Story.objects.all().count()
+        num_offcampus = Story.objects.filter(
+            currentLocation="School (Off-campus)").count()
+        num_oncampus = Story.objects.filter(
+            currentLocation="School (On-campus)").count()
+        num_home = Story.objects.filter(currentLocation="Home").count()
+        num_other = Story.objects.exclude(currentLocation="Home").exclude(
+            currentLocation="School (On-campus)").exclude(currentLocation="School (Off-campus)").count()
+
+        response['curr_location_breakdown']['offCampus'] = num_offcampus / num_stories
+        response['curr_location_breakdown']['onCampus'] = num_oncampus / num_stories
+        response['curr_location_breakdown']['home'] = num_home / num_stories
+        response['curr_location_breakdown']['other'] = num_other / num_stories
+
+        response['count'] = num_stories
+
+        feelings = {'NW': 'Not worried',
+                    'SW': 'Somewhat worried', 'VW': 'Very Worried'}
+        response["feelings"]["finance"] = {}
+        response["feelings"]["housing"] = {}
+        response["feelings"]["academic"] = {}
+        response["feelings"]["government"] = {}
+        response["feelings"]["physical"] = {}
+        response["feelings"]["mental"] = {}
+        for abbrev, feel in feelings.items():
+            result = Story.objects.filter(worryFinancial=abbrev).count()
+            response["feelings"]["finance"][feel] = result
+
+            result = Story.objects.filter(worryHousing=abbrev).count()
+            response["feelings"]["housing"][feel] = result
+
+            result = Story.objects.filter(worryAcademic=abbrev).count()
+            response["feelings"]["academic"][feel] = result
+
+            result = Story.objects.filter(worryGovernment=abbrev).count()
+            response["feelings"]["government"][feel] = result
+
+            result = Story.objects.filter(worryPhysical=abbrev).count()
+            response["feelings"]["physical"][feel] = result
+
+            result = Story.objects.filter(worryMental=abbrev).count()
+            response["feelings"]["mental"][feel] = result
+
+        return http.JsonResponse(response)

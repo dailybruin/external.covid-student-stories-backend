@@ -35,7 +35,6 @@ else:
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DEBUG')
-print(DEBUG)
 
 
 # what domain name of server is.
