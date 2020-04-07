@@ -3,6 +3,7 @@ from django.shortcuts import render
 from django.db import connection
 from django import http
 from django.db.models import Q
+from django.core import serializers
 from .models import Story
 from django.core.paginator import Paginator
 from rest_framework.views import APIView
@@ -69,7 +70,8 @@ class StoryView(APIView):
             query = query.filter(major_query)
 
         paginator = Paginator(query, 10)
-        return http.JsonResponse(list(paginator.page(i)), safe=False)
+        post_list = serializers.serialize('json', list(paginator.page(i)))
+        return http.HttpResponse(post_list, content_type="text/json-comment-filtered")
 
         # if schools or years or majors:
         #     sql_query += " WHERE "
@@ -110,13 +112,12 @@ class CreateStoryView(APIView):
 
         # sql_query = "INSERT INTO student_stories_story (" + ", ".join(
         #     keys) + ") VALUES (" + ", ".join(vals) + ")"
-
         try:
             # cursor = connection.cursor()
             # cursor.execute(sql_query)
             # connection.commit()
-            Story.objects.create(**request.POST)
-            return http.JsonResponse(request.POST)
+            Story.objects.create(**request.data)
+            return http.JsonResponse(request.data)
         except:
             return http.JsonResponse({"error": "Invalid post request"})
 
