@@ -5,6 +5,7 @@ from django.core import serializers
 from .models import Story
 from django.core.paginator import Paginator
 from rest_framework.views import APIView
+from datetime import datetime, timedelta
 
 
 class TestView(APIView):
@@ -17,7 +18,7 @@ class StoryView(APIView):
         schools = request.GET.get("school", None)
         years = request.GET.get("year", None)
         majors = request.GET.get("major", None)
-        # 0 for latest, 1 for most reacts
+        # 0 for latest, 1 for most top, 2 for hot
         try:
             sort = max(int(request.GET.get("sort", 0)), 0)
         except:
@@ -26,6 +27,11 @@ class StoryView(APIView):
             i = max(int(request.GET.get("i", 1)), 1)
         except:
             i = 1
+        # 0 for none, 1 love, 2 sad, 3 up, 4 angry
+        try:
+            reax = max(int(request.GET.get("reax", 0)), 0)
+        except:
+            reax = 0
 
         query = Story.objects.all()
         if schools:
@@ -59,7 +65,10 @@ class StoryView(APIView):
             query = query.filter(major_query)
 
         query = query.order_by(
-            "-timestamp") if sort == 0 else query.order_by("-reactTotal")
+            "-timestamp") if sort == 0 else query.order_by("-reactTotal") if sort == 1 else query.filter(created__gt=datetime.now() - timedelta(hours=8)).order_by("-reactTotal")
+
+        query = query.order_by("-reactLove") if reax == 1 else query.order_by("-reactSad") if reax == 2 else query.order_by(
+            "-reactUp") if reax == 3 else query.order_by("reactAngry") if reax == 4 else query
 
         paginator = Paginator(query, 10)
         post_list = serializers.serialize('json', list(paginator.page(i)))
