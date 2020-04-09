@@ -45,3 +45,8 @@ class Story(models.Model):
     responseDoneDifferently = models.TextField(null=True)
     mediaLinks = models.TextField(null=True)
     artCredit = models.CharField(max_length=50, null=True)
+    reactLove = models.IntegerField(default=0)
+    reactSad = models.IntegerField(default=0)
+    reactUp = models.IntegerField(default=0)
+    reactAngry = models.IntegerField(default=0)
+    reactTotal = models.IntegerField(default=0)
