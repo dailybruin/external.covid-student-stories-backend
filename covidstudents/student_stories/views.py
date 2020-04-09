@@ -17,6 +17,11 @@ class StoryView(APIView):
         schools = request.GET.get("school", None)
         years = request.GET.get("year", None)
         majors = request.GET.get("major", None)
+        # 0 for latest, 1 for most reacts
+        try:
+            sort = max(int(request.GET.get("sort", 0)), 0)
+        except:
+            sort = 0
         try:
             i = max(int(request.GET.get("i", 1)), 1)
         except:
@@ -53,9 +58,31 @@ class StoryView(APIView):
                     major_query = Q(major=major.replace("'", ""))
             query = query.filter(major_query)
 
+        query = query.order_by(
+            "-timestamp") if sort == 0 else query.order_by("-reactTotal")
+
         paginator = Paginator(query, 10)
         post_list = serializers.serialize('json', list(paginator.page(i)))
         return http.HttpResponse(post_list, content_type="text/json-comment-filtered")
+
+
+class ReactView(APIView):
+    def post(self, request):
+        try:
+            post = Story.objects.get(pk=request.data["pk"])
+            react = request.data["react"]
+            if react == 0:
+                post.reactLove += 1
+            elif react == 1:
+                post.reactSad += 1
+            elif react == 2:
+                post.reactUp += 1
+            else:
+                post.reactAngry += 1
+            post.save()
+            return http.JsonResponse({"message": "React update successful"})
+        except:
+            return http.JsonResponse({"error": "React update invalid"})
 
 
 class CreateStoryView(APIView):
@@ -119,6 +146,7 @@ class StatisticsView(APIView):
 
         return http.JsonResponse(response)
 
+
 def wordfreq(string):
     # all the words to filter out...
     stopwords = ["a", "about", "above", "across", "after", "afterwards"]
@@ -181,14 +209,17 @@ def wordfreq(string):
     ]
     stopwords += ["many", "may", "me", "meanwhile", "might", "mill", "mine"]
     stopwords += ["more", "moreover", "most", "mostly", "move", "much"]
-    stopwords += ["must", "my", "myself", "name", "namely", "need", "neither", "never"]
+    stopwords += ["must", "my", "myself", "name",
+                  "namely", "need", "neither", "never"]
     stopwords += ["nevertheless", "next", "nine", "no", "nobody", "none"]
     stopwords += ["noone", "nor", "not", "nothing", "now", "nowhere", "of"]
     stopwords += ["off", "often", "on", "once", "one", "only", "onto", "or"]
     stopwords += ["other", "others", "otherwise", "our", "ours", "ourselves"]
     stopwords += ["out", "over", "own", "part", "per", "perhaps", "please"]
-    stopwords += ["put", "rather", "re", "really", "s", "same", "see", "seem", "seemed"]
-    stopwords += ["seeming", "seems", "serious", "several", "she", "should", "shouldn't"]
+    stopwords += ["put", "rather", "re", "really",
+                  "s", "same", "see", "seem", "seemed"]
+    stopwords += ["seeming", "seems", "serious",
+                  "several", "she", "should", "shouldn't"]
     stopwords += ["show", "side", "since", "sincere", "six", "sixty", "so"]
     stopwords += ["some", "somehow", "someone", "something", "sometime"]
     stopwords += [
@@ -216,7 +247,8 @@ def wordfreq(string):
         "three",
     ]
     stopwords += ["three", "through", "throughout", "thru", "thus", "to"]
-    stopwords += ["together", "too", "took", "top", "toward", "towards", "twelve"]
+    stopwords += ["together", "too", "took",
+                  "top", "toward", "towards", "twelve"]
     stopwords += ["twenty", "two", "un", "under", "until", "up", "upon"]
     stopwords += ["us", "very", "via", "was", "we", "well", "were", "what"]
     stopwords += ["whatever", "when", "whence", "whenever", "where"]
@@ -225,7 +257,7 @@ def wordfreq(string):
     stopwords += ["whoever", "whole", "whom", "whose", "why", "will", "with"]
     stopwords += ["within", "without", "would", "yet", "you", "your"]
     stopwords += ["yours", "yourself", "yourselves"]
-    
+
     # Clean text and lower case all words
     for char in "1234567890-.,\n":
         string = string.replace(char, " ")
