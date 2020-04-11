@@ -67,9 +67,9 @@ class StoryView(APIView):
                     major_query = Q(major=major.replace("'", ""))
             query = query.filter(major_query)
 
-        query = query.order_by("-timestamp") if sort == 0 \
+        query = query.filter(created__gt=datetime.now() - timedelta(hours=8)).order_by("-reactTotal") if sort == 2 \
             else query.order_by("-reactTotal") if sort == 1 \
-            else query.filter(created__gt=datetime.now() - timedelta(hours=8)).order_by("-reactTotal")
+            else query.order_by("-timestamp")
 
         query = query.order_by("-reactLove") if reax == 1 \
             else query.order_by("-reactSad") if reax == 2 \
