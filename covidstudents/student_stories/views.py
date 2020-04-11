@@ -100,7 +100,7 @@ class ReactView(APIView):
             else:
                 old_react = None
 
-            if react is None:
+            if react is not None:
                 if react == 0:
                     post.reactLove += 1
                 elif react == 1:
@@ -109,8 +109,9 @@ class ReactView(APIView):
                     post.reactUp += 1
                 else:
                     post.reactAngry += 1
+                post.reactTotal += 1
 
-            if old_react is None:
+            if old_react is not None:
                 if old_react == 0:
                     post.reactLove -= 1
                 elif old_react == 1:
@@ -119,6 +120,7 @@ class ReactView(APIView):
                     post.reactUp -= 1
                 else:
                     post.reactAngry -= 1
+                post.reactTotal -= 1
 
             post.save()
             return http.JsonResponse({"message": "React update successful"})
