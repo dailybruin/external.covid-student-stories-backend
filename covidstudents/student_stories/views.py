@@ -153,10 +153,10 @@ class StatisticsView(APIView):
         num_other = Story.objects.exclude(currentLocation="Home").exclude(
             currentLocation="School (On-campus)").exclude(currentLocation="School (Off-campus)").count()
 
-        response['curr_location_breakdown']['offCampus'] = num_offcampus / num_stories
-        response['curr_location_breakdown']['onCampus'] = num_oncampus / num_stories
-        response['curr_location_breakdown']['home'] = num_home / num_stories
-        response['curr_location_breakdown']['other'] = num_other / num_stories
+        response['curr_location_breakdown']['offCampus'] = num_offcampus
+        response['curr_location_breakdown']['onCampus'] = num_oncampus
+        response['curr_location_breakdown']['home'] = num_home
+        response['curr_location_breakdown']['other'] = num_other
 
         response['count'] = num_stories
 
