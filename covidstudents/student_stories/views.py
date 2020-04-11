@@ -85,16 +85,41 @@ class StoryView(APIView):
 class ReactView(APIView):
     def post(self, request):
         try:
+            if "pk" not in request.data:
+                return http.JsonResponse({"error": "React update invalid"})
+
             post = Story.objects.get(pk=request.data["pk"])
-            react = request.data["react"]
-            if react == 0:
-                post.reactLove += 1
-            elif react == 1:
-                post.reactSad += 1
-            elif react == 2:
-                post.reactUp += 1
+
+            if "react" in request.data:
+                react = request.data["react"]
             else:
-                post.reactAngry += 1
+                react = None
+
+            if "oldReact" in request.data:
+                old_react = request.data["oldReact"]
+            else:
+                old_react = None
+
+            if react is None:
+                if react == 0:
+                    post.reactLove += 1
+                elif react == 1:
+                    post.reactSad += 1
+                elif react == 2:
+                    post.reactUp += 1
+                else:
+                    post.reactAngry += 1
+
+            if old_react is None:
+                if old_react == 0:
+                    post.reactLove -= 1
+                elif old_react == 1:
+                    post.reactSad -= 1
+                elif old_react == 2:
+                    post.reactUp -= 1
+                else:
+                    post.reactAngry -= 1
+
             post.save()
             return http.JsonResponse({"message": "React update successful"})
         except:
