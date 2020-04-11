@@ -33,7 +33,10 @@ class StoryView(APIView):
         except:
             reax = 0
 
-        query = Story.objects.all()
+        query = Story.objects.exclude(responseCommunity__isnull=True, responseCommunity__exact='',
+                                      responseAffected__isnull=True, responseAffected__exact='',
+                                      responseElse__isnull=True, responseElse__exact='',
+                                      responseDoneDifferently__isnull=True, responseDoneDifferently__exact='')
         if schools:
             schools = schools.split(" ")
             school_query = None
@@ -64,11 +67,15 @@ class StoryView(APIView):
                     major_query = Q(major=major.replace("'", ""))
             query = query.filter(major_query)
 
-        query = query.order_by(
-            "-timestamp") if sort == 0 else query.order_by("-reactTotal") if sort == 1 else query.filter(created__gt=datetime.now() - timedelta(hours=8)).order_by("-reactTotal")
+        query = query.order_by("-timestamp") if sort == 0 \
+            else query.order_by("-reactTotal") if sort == 1 \
+            else query.filter(created__gt=datetime.now() - timedelta(hours=8)).order_by("-reactTotal")
 
-        query = query.order_by("-reactLove") if reax == 1 else query.order_by("-reactSad") if reax == 2 else query.order_by(
-            "-reactUp") if reax == 3 else query.order_by("reactAngry") if reax == 4 else query
+        query = query.order_by("-reactLove") if reax == 1 \
+            else query.order_by("-reactSad") if reax == 2 \
+            else query.order_by("-reactUp") if reax == 3 \
+            else query.order_by("reactAngry") if reax == 4 \
+            else query
 
         paginator = Paginator(query, 10)
         post_list = serializers.serialize('json', list(paginator.page(i)))
@@ -163,7 +170,7 @@ def wordfreq(string):
         for line in f:
             word = line[:-1]
             stopwords.add(word)
-    
+
     # Clean text and lower case all words
     for char in "1234567890-.,\n":
         string = string.replace(char, " ")
