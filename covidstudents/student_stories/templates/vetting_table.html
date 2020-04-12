@@ -12,13 +12,13 @@
 <table>
     <tr>
         <th> ID </th>
-        <th>responseCommunity</th>
-        <th>responseAffected</th>
-        <th>responseElse</th>
-        <th>responseDoneDifferently</th>
-        <th>mediaLinks </th>
-        <th>artCredit</th>
-        <th>comfortablePublish</th>
+        <th>Community</th>
+        <th>Affected</th>
+        <th>Else</th>
+        <th>Done Differently</th>
+        <th>Media Links </th>
+        <th>Art Credit</th>
+        <th>com for tab le pub</th>
         <th> Approval State </th>
         <th> Approve? </th>
         <th> Admin side link </th>
@@ -26,11 +26,18 @@
     {% for row in stories %}
     <tr> 
         <td> {{ row.id }} </td>
-        <td>{{ row.responseCommunity }}</td>
-        <td>{{ row.responseAffected }}</td>
-        <td>{{ row.responseElse }}</td>
-        <td>{{ row.responseDoneDifferently }}</td>
-        <td>{{ row.mediaLinks }}</td>
+        <td>
+            <div class="overflow-text">
+                {{ row.responseCommunity }}
+            </div>
+        </td>
+        <td>
+             <div class="overflow-text">
+             {{ row.responseAffected }} </div>
+         </td>
+        <td><div class="overflow-text">{{ row.responseElse }}</div></td>
+        <td><div class="overflow-text">{{ row.responseDoneDifferently }}</div></td>
+        <td><div class="overflow-text">{{ row.mediaLinks }}</div></td>
         <td>{{ row.artCredit }}</td>
         <td>{{ row.comfortablePublish }}</td>
         <td id="{{row.id}}-approvalState"> {{ row.approvalState }} </td>
