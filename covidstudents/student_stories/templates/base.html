@@ -1,0 +1,47 @@
+{% load static %}
+<html>
+    <head>
+        <title>Student Stories</title>
+        <meta charset="utf-8" /> 
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <style>
+            table {
+              font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+              border-collapse: collapse;
+              width: 100%;
+            }
+
+            td, th {
+              border: 1px solid #ddd;
+              padding: 8px;
+              height: 50px;
+            }
+
+            tr:nth-child(even){background-color: #f2f2f2;}
+
+            tr:hover {background-color: #ddd;}
+
+            th {
+              padding-top: 12px;
+              padding-bottom: 12px;
+              text-align: left;
+              background-color: black;
+              color: white;
+            }
+            .button {
+
+              text-decoration: none;
+              background-color: #EEEEEE;
+              color: #333333;
+              padding: 2px 6px 2px 6px;
+              border: 1px solid #CCCCCC;
+              margin-bottom: 20px;
+              margin-right: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        {% block content %}
+        {% endblock %}
+    </body>
+</html>
