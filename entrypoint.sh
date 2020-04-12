@@ -1,8 +1,9 @@
 #!/bin/sh
 set -e
 
-# FUTURE SELF: MAKE MANUAL MIGRATIONS THE RANCHER IS RIP
-# python covidstudents/manage.py makemigrations
-# python covidstudents/manage.py migrate
+# reason for this is because migration 0003 seems to be breaking for some reason on the rancher container
+python covidstudents/manage.py migrate
+python covidstudents/manage.py migrate student_stories 0003_auto_20200411_1914 --fake
+python covidstudents/manage.py migrate
 
 exec "$@"

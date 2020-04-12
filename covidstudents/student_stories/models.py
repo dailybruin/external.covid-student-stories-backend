@@ -31,6 +31,7 @@ class Story(models.Model):
     ethnicity = models.CharField(max_length=50)
     state = models.CharField(max_length=50, null=True)
     city = models.CharField(max_length=50)
+    country = models.CharField(max_length=50, null=True)
     worryFinancial = models.CharField(max_length=2, choices=FEELINGS)
     worryHousing = models.CharField(max_length=2, choices=FEELINGS)
     worryAcademic = models.CharField(max_length=2, choices=FEELINGS)

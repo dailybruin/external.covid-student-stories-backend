@@ -18,6 +18,11 @@ class StoryView(APIView):
         schools = request.GET.get("school", None)
         years = request.GET.get("year", None)
         majors = request.GET.get("major", None)
+        # 0 for none, 1 for CA, 2 for OOS, 3 for international
+        try:
+            sort = max(int(request.GET.get("home", 0)), 0)
+        except:
+            sort = 0
         # 0 for latest, 1 for most top, 2 for hot
         try:
             sort = max(int(request.GET.get("sort", 0)), 0)
@@ -71,10 +76,15 @@ class StoryView(APIView):
             else query.order_by("-reactTotal") if sort == 1 \
             else query.order_by("-timestamp")
 
+        query = query.filter(state="California") if sort == 1 \
+            else query.exclude(state="California").filter(Q(country="United States of America (USA)") | Q(state__isnull=False)) if sort == 2 \
+            else query.filter(country__isnull=False).exclude(country="United States of America (USA)") if sort == 3 \
+            else query
+
         query = query.order_by("-reactLove") if reax == 1 \
             else query.order_by("-reactSad") if reax == 2 \
             else query.order_by("-reactUp") if reax == 3 \
-            else query.order_by("reactAngry") if reax == 4 \
+            else query.order_by("-reactAngry") if reax == 4 \
             else query
 
         paginator = Paginator(query, 10)
@@ -138,6 +148,7 @@ class CreateStoryView(APIView):
                                  ethnicity=data["ethnicity"],
                                  state=data["state"],
                                  city=data["city"],
+                                 country=data["country"],
                                  worryFinancial=data["worryFinancial"],
                                  worryHousing=data["worryHousing"],
                                  worryAcademic=data["worryAcademic"],
