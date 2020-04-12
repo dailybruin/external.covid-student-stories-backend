@@ -131,8 +131,29 @@ class ReactView(APIView):
 class CreateStoryView(APIView):
     def post(self, request):
         try:
-            Story.objects.create(**request.data)
-            return http.JsonResponse(request.data)
+            data = request.data
+            Story.objects.create(school=data["school"],
+                                 major=data["major"],
+                                 year=data["year"],
+                                 ethnicity=data["ethnicity"],
+                                 state=data["state"],
+                                 city=data["city"],
+                                 worryFinancial=data["worryFinancial"],
+                                 worryHousing=data["worryHousing"],
+                                 worryAcademic=data["worryAcademic"],
+                                 worryGovernment=data["worryGovernment"],
+                                 worryPhysical=data["worryPhysical"],
+                                 worryMental=data["worryMental"],
+                                 responseCommunity=data["responseCommunity"],
+                                 responseAffected=data["repsonseAffected"],
+                                 responseElse=data["responseElse"],
+                                 comfortablePublish=data["comfortablePublish"],
+                                 knowPositive=data["knowPositive"],
+                                 currentLocation=data["currentLocation"],
+                                 responseDoneDifferently=data["responseDoneDifferently"],
+                                 mediaLinks=data["mediaLinks"],
+                                 artCredit=data["artCredit"])
+            return http.JsonResponse(data)
         except:
             return http.JsonResponse({"error": "Invalid post request"})
 
