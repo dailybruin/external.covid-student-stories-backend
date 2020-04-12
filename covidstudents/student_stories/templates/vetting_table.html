@@ -1,0 +1,110 @@
+{% extends 'base.html' %} 
+
+{% block content %}
+<h2>Students Stories vetting table</h2>
+<p> Now showing <b>{{showing}}</b> stories </p>
+<div style="margin-bottom: 20px;">
+<a class="button" href="?approvalState=approved"> See approved </a>
+<a class="button" href="?approvalState=rejected"> See rejected </a>
+<a class="button" href="?approvalState=undecided"> See undecided </a>
+<a class="button" href="?"> See all </a>
+</div>
+<table>
+    <tr>
+        <th> ID </th>
+        <th>Community</th>
+        <th>Affected</th>
+        <th>Else</th>
+        <th>Done Differently</th>
+        <th>Media Links </th>
+        <th>Art Credit</th>
+        <th>com for tab le pub</th>
+        <th> Approval State </th>
+        <th> Approve? </th>
+        <th> Admin side link </th>
+    </tr>
+    {% for row in stories %}
+    <tr> 
+        <td> {{ row.id }} </td>
+        <td>
+            <div class="overflow-text">
+                {{ row.responseCommunity }}
+            </div>
+        </td>
+        <td>
+             <div class="overflow-text">
+             {{ row.responseAffected }} </div>
+         </td>
+        <td><div class="overflow-text">{{ row.responseElse }}</div></td>
+        <td><div class="overflow-text">{{ row.responseDoneDifferently }}</div></td>
+        <td><div class="overflow-text">{{ row.mediaLinks }}</div></td>
+        <td>{{ row.artCredit }}</td>
+        <td>{{ row.comfortablePublish }}</td>
+        <td id="{{row.id}}-approvalState"> {{ row.approvalState }} </td>
+        <td>
+            {% if row.approvalState == "undecided" %}
+            <input id="{{row.id}}-approveBtn" type="button" value="approve" onclick="approve({{row.id}});" />
+            <input id="{{row.id}}-rejectBtn" type="button" value="reject" onclick="reject({{row.id}});" />
+            {% else %}
+            {% endif %}
+        </td>
+        <td>
+            <a  target="_blank" rel="noopener noreferrer" href="http://{{ request.get_host }}/admin/student_stories/story/{{row.id}}/change/">view in admin side</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+<script>
+
+// from django website
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+}
+let csrftoken = getCookie('csrftoken');
+$.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
+    }
+});
+
+
+function approve(id){
+    const url= 'approve/' + id;
+    $.ajax({url: url, type: "POST",  success: function(result){
+        $("#" + id + "-approvalState").text("Approved!");
+        $("#" + id + "-approveBtn").hide()
+        $("#" + id + "-rejectBtn").hide()
+
+    }});
+}
+
+function reject(id){
+    const url= 'reject/' + id;
+    $.ajax({url: url, type: "POST", success: function(result){
+        $("#" + id + "-approvalState").text("Rejected!");
+        $("#" + id + "-approveBtn").hide()
+        $("#" + id + "-rejectBtn").hide()
+    }});
+}
+
+</script>
+{% endblock %}
