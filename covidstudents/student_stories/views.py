@@ -87,9 +87,9 @@ class ReactView(APIView):
         try:
             if "pk" not in request.data:
                 return http.JsonResponse({"error": "React update invalid"})
-
+            print(request.data)
             post = Story.objects.get(pk=request.data["pk"])
-
+            print("hi")
             if "react" in request.data:
                 react = request.data["react"]
             else:
@@ -113,14 +113,14 @@ class ReactView(APIView):
 
             if old_react is not None:
                 if old_react == 0:
-                    post.reactLove -= 1
+                    post.reactLove = max(post.reactLove - 1, 0)
                 elif old_react == 1:
-                    post.reactSad -= 1
+                    post.reactSad = max(post.reactSad - 1, 0)
                 elif old_react == 2:
-                    post.reactUp -= 1
+                    post.reactUp = max(post.reactUp - 1, 0)
                 else:
-                    post.reactAngry -= 1
-                post.reactTotal -= 1
+                    post.reactAngry = max(post.reactAngry - 1, 0)
+                post.reactTotal = max(post.reactTotal - 1, 0)
 
             post.save()
             return http.JsonResponse({"message": "React update successful"})
