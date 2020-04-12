@@ -6,6 +6,14 @@ from .models import Story
 from django.core.paginator import Paginator
 from rest_framework.views import APIView
 from datetime import datetime, timedelta
+from rest_framework.decorators import api_view
+
+from django.shortcuts import redirect, render
+from django.urls import reverse
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+from django.views.decorators.csrf import ensure_csrf_cookie
+
 
 
 class TestView(APIView):
@@ -255,3 +263,52 @@ def wordfreq(string):
     # or just filter them idk lol
 
     return wordfreq_map
+
+
+
+# Approval stuff
+@ensure_csrf_cookie
+def admin_table_page(request):
+    
+    if not request.user.is_authenticated:
+        return redirect("/admin/login/?next="+reverse("vetting-table")) # admin login page
+
+    # if we got here, they are authenticated
+    stories = Story.objects.all().order_by('-id')  
+
+
+    filterByApprovalState = request.GET.get("approvalState", None)
+    if filterByApprovalState:
+        stories = stories.filter(approvalState=filterByApprovalState)
+
+    # string describing what data the server is showing
+    # e.g: showing only undecided posts
+    showing = "all"
+    if filterByApprovalState:
+        showing = filterByApprovalState
+
+    return render(request, "vetting_table.html", {
+        "stories": stories,
+        "showing": showing
+        }
+    )
+
+@api_view(['POST'])
+def approve(request, id):
+    if not request.user.is_authenticated:
+        return JsonResponse({'error':'no'}, status=403)
+
+    instance = get_object_or_404(Story, id=id)
+    instance.approvalState = 'approved'
+    instance.save()
+    return JsonResponse({"success": f'{id} has been approved'})
+
+@api_view(['POST'])
+def reject(request, id):
+    if not request.user.is_authenticated:
+        return JsonResponse({'error':'no'}, status=403)
+
+    instance = get_object_or_404(Story, id=id)
+    instance.approvalState = 'rejected'
+    instance.save()
+    return JsonResponse({"success": f'{id} has been rejected'})

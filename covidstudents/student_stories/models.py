@@ -24,6 +24,12 @@ class Story(models.Model):
         ('X', 'prefer not to share')
     ]
 
+    APPROVAL_STATES = [
+        ('approved', 'approved'),
+        ('rejected', 'rejected'),
+        ('undecided', 'undecided')
+    ]
+
     timestamp = models.DateTimeField(auto_now_add=True)
     school = models.CharField(max_length=50)
     major = models.CharField(max_length=75)
@@ -52,3 +58,4 @@ class Story(models.Model):
     reactUp = models.IntegerField(default=0)
     reactAngry = models.IntegerField(default=0)
     reactTotal = models.IntegerField(default=0)
+    approvalState = models.CharField(max_length=9,choices=APPROVAL_STATES, default='undecided')
