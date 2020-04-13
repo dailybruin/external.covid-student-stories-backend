@@ -169,13 +169,13 @@ class CreateStoryView(APIView):
                                  worryGovernment=data["worryGovernment"],
                                  worryPhysical=data["worryPhysical"],
                                  worryMental=data["worryMental"],
-                                 responseCommunity=data["responseCommunity"],
-                                 responseAffected=data["repsonseAffected"],
-                                 responseElse=data["responseElse"],
+                                 responseCommunity=data["responseCommunity"][:500],
+                                 responseAffected=data["repsonseAffected"][:1000],
+                                 responseElse=data["responseElse"][:10000],
                                  comfortablePublish=data["comfortablePublish"],
                                  knowPositive=data["knowPositive"],
                                  currentLocation=data["currentLocation"],
-                                 responseDoneDifferently=data["responseDoneDifferently"],
+                                 responseDoneDifferently=data["responseDoneDifferently"][:500],
                                  mediaLinks=data["mediaLinks"],
                                  artCredit=data["artCredit"])
             return http.JsonResponse(data)
