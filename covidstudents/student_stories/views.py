@@ -107,6 +107,7 @@ class StoryView(APIView):
             else query
 
         paginator = Paginator(query, 10)
+        i = min(i, paginator.num_pages)
         post_list = serializers.serialize('json', list(paginator.page(i)))
         return http.HttpResponse(post_list, content_type="text/json-comment-filtered")
 
@@ -195,16 +196,18 @@ class StatisticsView(APIView):
     def get(self, request):
         response = {'feelings': {}, 'curr_location_breakdown': {}}
 
-        num_know_positives = Story.objects.filter(knowPositive="Y").count()
+        query = Story.objects.filter(approvalState="approved")
+
+        num_know_positives = query.filter(knowPositive="Y").count()
         response["numKnowPositives"] = num_know_positives
 
-        num_stories = Story.objects.all().count()
-        num_offcampus = Story.objects.filter(
+        num_stories = query.count()
+        num_offcampus = query.filter(
             currentLocation="School (Off-campus)").count()
-        num_oncampus = Story.objects.filter(
+        num_oncampus = query.filter(
             currentLocation="School (On-campus)").count()
-        num_home = Story.objects.filter(currentLocation="Home").count()
-        num_other = Story.objects.exclude(currentLocation="Home").exclude(
+        num_home = query.filter(currentLocation="Home").count()
+        num_other = query.exclude(currentLocation="Home").exclude(
             currentLocation="School (On-campus)").exclude(currentLocation="School (Off-campus)").count()
 
         response['curr_location_breakdown']['offCampus'] = num_offcampus
@@ -223,22 +226,22 @@ class StatisticsView(APIView):
         response["feelings"]["physical"] = {}
         response["feelings"]["mental"] = {}
         for abbrev, feel in feelings.items():
-            result = Story.objects.filter(worryFinancial=abbrev).count()
+            result = query.filter(worryFinancial=abbrev).count()
             response["feelings"]["finance"][feel] = result
 
-            result = Story.objects.filter(worryHousing=abbrev).count()
+            result = query.filter(worryHousing=abbrev).count()
             response["feelings"]["housing"][feel] = result
 
-            result = Story.objects.filter(worryAcademic=abbrev).count()
+            result = query.filter(worryAcademic=abbrev).count()
             response["feelings"]["academic"][feel] = result
 
-            result = Story.objects.filter(worryGovernment=abbrev).count()
+            result = query.filter(worryGovernment=abbrev).count()
             response["feelings"]["government"][feel] = result
 
-            result = Story.objects.filter(worryPhysical=abbrev).count()
+            result = query.filter(worryPhysical=abbrev).count()
             response["feelings"]["physical"][feel] = result
 
-            result = Story.objects.filter(worryMental=abbrev).count()
+            result = query.filter(worryMental=abbrev).count()
             response["feelings"]["mental"][feel] = result
 
         return http.JsonResponse(response)
