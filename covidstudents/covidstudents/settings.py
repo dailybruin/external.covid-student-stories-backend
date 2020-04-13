@@ -148,3 +148,60 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
+    'formatters': {
+        'simple_server': {
+            '()': 'django.utils.log.ServerFormatter',
+            'format': '[%(asctime)s|%(levelname)s] %(message)s',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'INFO',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+        },
+        'logfile': {
+            'level': 'INFO',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(BASE_DIR, 'meow.log'),
+            'maxBytes': 1024*1024*3,  # 3MB
+            'formatter': 'simple_server'
+        },
+        # this handler makes errors show up in rancher's console
+        'console_debug_false': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'class': 'logging.StreamHandler'
+        },
+    },
+    'loggers': {
+        'django.request': {
+            'handlers': ['console', 'console_debug_false', 'logfile'],
+            'level': 'INFO',
+        },
+        'django.security.*': {
+            'handlers': ['console', 'console_debug_false', 'logfile'],
+            'level': 'INFO',
+        },
+        'scheduler': {
+            'handlers': ['console', 'console_debug_false', 'logfile'],
+            'level': 'INFO',
+        },
+        'oauth': {
+            'handlers': ['console', 'console_debug_false', 'logfile'],
+            'level': 'INFO',
+        },
+    }
+}

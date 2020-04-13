@@ -13,6 +13,8 @@ from django.urls import reverse
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import ensure_csrf_cookie
+import logging
+logger = logging.getLogger('scheduler')
 
 
 class TestView(APIView):
@@ -318,14 +320,19 @@ def admin_table_page(request):
 
 def updateCloud(res):
     if res and res != "":
+        logger.error(res)
         freqs = wordfreq(res)
+        logger.error(freqs)
         for num, key in freqs:
+            logger.error(key)
+            logger.error(Word.objects.filter(word=key).count())
             if Word.objects.filter(word=key).count() == 0:
                 Word.objects.create(word=key, charcount=num)
             else:
                 word = Word.objects.get(word=key)
                 word.charcount += num
                 word.save()
+            logger.error("updated word")
 
 
 @api_view(['POST'])
@@ -343,7 +350,6 @@ def approve(request, id):
         updateCloud(instance.responseCommunity)
         updateCloud(instance.responseAffected)
         updateCloud(instance.responseDoneDifferently)
-        instance.save()
     except:
         return JsonResponse({"message": f'{id} has been approved, but cloud failed'})
 
