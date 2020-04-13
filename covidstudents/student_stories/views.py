@@ -203,11 +203,11 @@ def create_post(request):
                              artCredit=data.get("artCredit"),
                              approvalState='undecided' if data["comfortablePublish"] == 'Y' else 'rejected')
 
-        return http.HttpResponse("Hello ")
-        # return http.JsonResponse(data)
+        # return http.HttpResponse("Hello ")
+        return http.JsonResponse(data)
     except:
         logger.error(traceback.format_exc())
-        return http.HttpResponse("Hello failed")
+        return http.JsonResponse({"error": "Sad", "data": data})
 
 
 class StatisticsView(APIView):
