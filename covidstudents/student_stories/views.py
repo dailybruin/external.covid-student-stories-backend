@@ -15,7 +15,6 @@ from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import ensure_csrf_cookie
 
 
-
 class TestView(APIView):
     def get(self, request):
         return http.HttpResponse("Hello World")
@@ -46,10 +45,17 @@ class StoryView(APIView):
         except:
             reax = 0
 
-        query = Story.objects.exclude(responseCommunity__isnull=True, responseCommunity__exact='',
-                                      responseAffected__isnull=True, responseAffected__exact='',
-                                      responseElse__isnull=True, responseElse__exact='',
-                                      responseDoneDifferently__isnull=True, responseDoneDifferently__exact='')
+        commFilter = Q(responseCommunity__isnull=True) | Q(
+            responseCommunity__exact='')
+        affectFilter = Q(responseAffected__isnull=True) | Q(
+            responseAffected__exact='')
+        elseFilter = Q(responseElse__isnull=True) | Q(responseElse__exact='')
+        diffFilter = Q(responseDoneDifferently__isnull=True) | Q(
+            responseDoneDifferently__exact='')
+
+        query = Story.objects.exclude(
+            commFilter & affectFilter & elseFilter & diffFilter)
+
         if schools:
             schools = schools.split(" ")
             school_query = None
@@ -265,17 +271,16 @@ def wordfreq(string):
     return wordfreq_map
 
 
-
 # Approval stuff
 @ensure_csrf_cookie
 def admin_table_page(request):
-    
+
     if not request.user.is_authenticated:
-        return redirect("/admin/login/?next="+reverse("vetting-table")) # admin login page
+        # admin login page
+        return redirect("/admin/login/?next="+reverse("vetting-table"))
 
     # if we got here, they are authenticated
-    stories = Story.objects.all().order_by('-id')  
-
+    stories = Story.objects.all().order_by('-id')
 
     filterByApprovalState = request.GET.get("approvalState", None)
     if filterByApprovalState:
@@ -290,23 +295,25 @@ def admin_table_page(request):
     return render(request, "vetting_table.html", {
         "stories": stories,
         "showing": showing
-        }
+    }
     )
+
 
 @api_view(['POST'])
 def approve(request, id):
     if not request.user.is_authenticated:
-        return JsonResponse({'error':'no'}, status=403)
+        return JsonResponse({'error': 'no'}, status=403)
 
     instance = get_object_or_404(Story, id=id)
     instance.approvalState = 'approved'
     instance.save()
     return JsonResponse({"success": f'{id} has been approved'})
 
+
 @api_view(['POST'])
 def reject(request, id):
     if not request.user.is_authenticated:
-        return JsonResponse({'error':'no'}, status=403)
+        return JsonResponse({'error': 'no'}, status=403)
 
     instance = get_object_or_404(Story, id=id)
     instance.approvalState = 'rejected'
