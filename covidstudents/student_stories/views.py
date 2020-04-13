@@ -111,9 +111,9 @@ class ReactView(APIView):
         try:
             if "pk" not in request.data:
                 return http.JsonResponse({"error": "React update invalid"})
-            print(request.data)
+
             post = Story.objects.get(pk=request.data["pk"])
-            print("hi")
+
             if "react" in request.data:
                 react = request.data["react"]
             else:
@@ -180,7 +180,7 @@ class CreateStoryView(APIView):
                                  artCredit=data["artCredit"])
             return http.JsonResponse(data)
         except:
-            return http.JsonResponse({"error": "Invalid post request"})
+            return http.JsonResponse({"error": "Invalid post request", "data": request.data})
 
 
 class StatisticsView(APIView):
