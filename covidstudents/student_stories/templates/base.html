@@ -9,12 +9,14 @@
               font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
               border-collapse: collapse;
               width: 100%;
+              overflow-wrap: break-word;
             }
 
             td, th {
               border: 1px solid #ddd;
               padding: 8px;
               height: 50px;
+              overflow-wrap: break-word;
             }
 
             tr:nth-child(even){background-color: #f2f2f2;}
@@ -39,9 +41,10 @@
             }
 
             .overflow-text {
-              /*width: 250px; */
+              max-width: 300px;
               height: 120px; 
-              overflow: auto
+              overflow: auto;
+              overflow-wrap: break-word;
             }
         </style>
     </head>
