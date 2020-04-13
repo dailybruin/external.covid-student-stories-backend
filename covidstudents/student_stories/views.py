@@ -14,6 +14,7 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import ensure_csrf_cookie
 import logging
+import traceback
 logger = logging.getLogger('scheduler')
 
 
@@ -352,6 +353,7 @@ def approve(request, id):
         updateCloud(instance.responseAffected)
         updateCloud(instance.responseDoneDifferently)
     except:
+        logger.critical(traceback.format_exc())
         return JsonResponse({"message": f'{id} has been approved, but cloud failed'})
 
     return JsonResponse({"success": f'{id} has been approved'})
