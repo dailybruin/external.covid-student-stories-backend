@@ -178,30 +178,29 @@ def truncate(string, length):
 def create_post(request):
     try:
         data = request.POST
-        Story.objects.create(school=truncate(data["school"], 100),
-                             major=truncate(data["major"], 75),
-                             year=data["year"],
+        Story.objects.create(school=truncate(data.get("school"), 100),
+                             major=truncate(data.get("major"), 75),
+                             year=data.get("year"),
                              state=data.get("state"),
-                             city=truncate(data["city"], 50),
+                             city=truncate(data.get("city"), 50),
                              country=truncate(data.get("country"), 50),
-                             worryFinancial=data["worryFinancial"],
-                             worryHousing=data["worryHousing"],
-                             worryAcademic=data["worryAcademic"],
-                             worryGovernment=data["worryGovernment"],
-                             worryPhysical=data["worryPhysical"],
-                             worryMental=data["worryMental"],
-                             responseCommunity=data.get(
-                                 "responseCommunity"),
+                             worryFinancial=data.get("worryFinancial"),
+                             worryHousing=data.get("worryHousing"),
+                             worryAcademic=data.get("worryAcademic"),
+                             worryGovernment=data.get("worryGovernment"),
+                             worryPhysical=data.get("worryPhysical"),
+                             worryMental=data.get("worryMental"),
+                             responseCommunity=data.get("responseCommunity"),
                              responseAffected=data.get("responseAffected"),
                              responseElse=data.get("responseElse"),
-                             comfortablePublish=data["comfortablePublish"],
-                             knowPositive=data["knowPositive"],
-                             currentLocation=truncate(data["currentLocation_other"] if data[
-                                 "currentLocation"] == "" else data["currentLocation"], 50),
+                             comfortablePublish=data.get("comfortablePublish"),
+                             knowPositive=data.get("knowPositive"),
+                             currentLocation=truncate(data.get("currentLocation_other") if data.get(
+                                 "currentLocation") == "" else data.get("currentLocation"), 50),
                              responseDoneDifferently=data.get(
                                  "responseDoneDifferently"),
                              artCredit=data.get("artCredit"),
-                             approvalState='undecided' if data["comfortablePublish"] == 'Y' else 'rejected')
+                             approvalState='undecided' if data.get("comfortablePublish") == 'Y' else 'rejected')
 
         # return http.HttpResponse("Hello ")
         return http.JsonResponse(data)
