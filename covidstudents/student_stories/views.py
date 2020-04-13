@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django import http
 from django.db.models import Q
 from django.core import serializers
-from .models import Story
+from .models import Story, Word
 from django.core.paginator import Paginator
 from rest_framework.views import APIView
 from datetime import datetime, timedelta
@@ -187,6 +187,7 @@ class CreateStoryView(APIView):
                                  mediaLinks=data.get("mediaLinks"),
                                  artCredit=data.get("artCredit"),
                                  approvalState='undecided' if data["comfortablePublish"] == 'Y' else 'rejected')
+
             return http.JsonResponse(data)
         except:
             return http.JsonResponse({"error": "Invalid post request", "data": request.data})
@@ -243,6 +244,10 @@ class StatisticsView(APIView):
 
             result = query.filter(worryMental=abbrev).count()
             response["feelings"]["mental"][feel] = result
+
+        allwords = Word.objects.all()
+        response["words"] = [
+            {"text": record.word, "value": record.charcount} for record in allwords]
 
         return http.JsonResponse(response)
 
@@ -318,6 +323,23 @@ def approve(request, id):
     instance = get_object_or_404(Story, id=id)
     instance.approvalState = 'approved'
     instance.save()
+
+    def updateCloud(res):
+        if res and res != "":
+            freqs = wordfreq(res)
+            for num, key in freqs:
+                try:
+                    word = Word.objects.get(word=key)
+                    word.charcount += num
+                    word.save()
+                except:
+                    Word.objects.create(word=key, charcount=num)
+
+    updateCloud(instance.responseElse)
+    updateCloud(instance.responseCommunity)
+    updateCloud(instance.responseAffected)
+    updateCloud(instance.responseDoneDifferently)
+
     return JsonResponse({"success": f'{id} has been approved'})
 
 

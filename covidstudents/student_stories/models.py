@@ -1,6 +1,11 @@
 from django.db import models
 
 
+class Word(models.Model):
+    word = models.CharField(max_length=50)
+    charcount = models.IntegerField(default=1)
+
+
 class Story(models.Model):
     YEAR_IN_SCHOOL_CHOICES = [
         ('HS', 'high school'),
