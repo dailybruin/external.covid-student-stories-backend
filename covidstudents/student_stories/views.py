@@ -172,18 +172,16 @@ class CreateStoryView(APIView):
                                  worryGovernment=data["worryGovernment"],
                                  worryPhysical=data["worryPhysical"],
                                  worryMental=data["worryMental"],
-                                 responseCommunity=data["responseCommunity"][:500] if data.get(
-                                     "responseCommunity") else None,
-                                 responseAffected=data["repsonseAffected"][:1000] if data.get(
-                                     "responseAffected") else None,
-                                 responseElse=data["responseElse"][:10000] if data.get(
-                                     "responseElse") else None,
+                                 responseCommunity=data.get(
+                                     "responseCommunity"),
+                                 responseAffected=data.get("responseAffected"),
+                                 responseElse=data.get("responseElse"),
                                  comfortablePublish=data["comfortablePublish"],
                                  knowPositive=data["knowPositive"],
                                  currentLocation=data["currentLocation_other"] if data[
                                      "currentLocation"] == "" else data["currentLocation"],
-                                 responseDoneDifferently=data["responseDoneDifferently"][:500] if data.get(
-                                     "responseDoneDifferently") else None,
+                                 responseDoneDifferently=data.get(
+                                     "responseDoneDifferently"),
                                  mediaLinks=data.get("mediaLinks"),
                                  artCredit=data.get("artCredit"),
                                  approvalState='undecided' if data["comfortablePublish"] == 'Y' else 'rejected')
