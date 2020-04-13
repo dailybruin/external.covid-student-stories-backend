@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 import os
 import environ
 
-from time  import gmtime, strftime
+from time import gmtime, strftime
 
 
 # environment variable reading set up
@@ -149,7 +149,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'build/static')
 
 showtime = strftime("%Y-%m-%d %H:%M:%S", gmtime())
 
