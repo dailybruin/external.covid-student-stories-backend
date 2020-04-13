@@ -44,8 +44,6 @@ if not DEBUG:
 else:
     ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]']
 
-# warning, we are overriding this in prod too since we are using a reverse proxy
-ALLOWED_HOSTS = ['0.0.0.0','172.17.0.2','127.0.0.1', 'localhost', 'localhost:5000']
 
 # Application definition
 
@@ -205,16 +203,5 @@ LOGGING = {
             'handlers': ['console', 'console_debug_false', 'logfile'],
             'level': 'INFO',
         },
-    }
-}
-
-
-REST_FRAMEWORK = {
-    'DEFAULT_THROTTLE_CLASSES': [
-        'rest_framework.throttling.AnonRateThrottle',
-    ],
-    'DEFAULT_THROTTLE_RATES': {
-        'anon': '120/min',
-        'form': '10/day'
     }
 }

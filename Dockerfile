@@ -12,11 +12,6 @@ RUN apt-get update && apt-get install -y curl \
     build-essential \
     libpq-dev
 
-RUN apt-get update
-RUN apt-get install -y nginx
-ADD nginx.conf /etc/nginx/nginx.conf
-ADD nginx.default /etc/nginx/conf.d/default.conf
-
 ADD requirements.txt .
 RUN pip install -U -r requirements.txt
 

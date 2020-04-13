@@ -170,8 +170,7 @@ def truncate(string, length):
 
 
 class CreateStoryView(APIView):
-    throttle_scope = 'form'
-
+    
     def post(self, request):
         try:
             data = request.data

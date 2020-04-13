@@ -7,11 +7,11 @@ services:
     # later on, the command will be the commented one
     # only issue now is that gunicorn can easily be ddos-ed so we have to put it behind nginx
     # and nginx should be the one serving static files.
-    command: nginx
+    command: gunicorn --bind 0.0.0.0:5000 --pythonpath covidstudents covidstudents.wsgi --log-file -
     #    command: python unified_backend/manage.py runserver 0.0.0.0:5000
     entrypoint: ./entrypoint.sh
     ports:
-      - "5000:80"
+      - "5000:5000"
     env_file: .env
     depends_on:
       - db
