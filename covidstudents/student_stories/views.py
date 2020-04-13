@@ -177,7 +177,7 @@ def truncate(string, length):
 @csrf_exempt
 def create_post(request):
     try:
-        data = request.POST
+        data = request.data
         Story.objects.create(school=truncate(data["school"], 100),
                              major=truncate(data["major"], 75),
                              year=data["year"],
@@ -207,7 +207,7 @@ def create_post(request):
         return http.JsonResponse(data)
     except:
         logger.error(traceback.format_exc())
-        return http.JsonResponse({"error": "Sad", "data": data})
+        return http.JsonResponse({"error": "Sad", "data": request.data})
 
 
 class StatisticsView(APIView):
