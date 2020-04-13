@@ -249,9 +249,9 @@ class StatisticsView(APIView):
             result = query.filter(worryMental=abbrev).count()
             response["feelings"]["mental"][feel] = result
 
-        allwords = Word.objects.all()
+        allwords = Word.objects.order_by("-charcount")
         response["words"] = [
-            {"text": record.word, "value": record.charcount} for record in allwords]
+            {"text": record.word, "value": record.charcount} for record in allwords][:100]
 
         return http.JsonResponse(response)
 
@@ -259,7 +259,7 @@ class StatisticsView(APIView):
 def wordfreq(string):
     # all the words to filter out...
     stopwords = set()
-    logger.error("JAY 261")
+
     with open("stopwords.txt", "r") as f:
         for line in f:
             word = line[:-1]
@@ -269,17 +269,17 @@ def wordfreq(string):
     for char in "'’1234567890-.,\n":
         string = string.replace(char, " ")
     string = string.lower()
-    logger.error("JAY 271")
+
     # turn string into array of words
     wordlist = string.split()
-    logger.error("JAY 274")
+
     # filter out garbage words
     wordlist = [w for w in wordlist if w not in stopwords]
-    logger.error("JAY 277")
+
     # Given a list of words, return a dictionary of word-frequency pairs.
     wordfreq = [wordlist.count(p) for p in wordlist]
     wordfreq_map = dict(list(zip(wordlist, wordfreq)))
-    logger.error("JAY 281")
+
     # sort in descending order
     aux = [(wordfreq_map[key], key) for key in wordfreq_map]
     aux.sort()
@@ -322,19 +322,14 @@ def admin_table_page(request):
 
 def updateCloud(res):
     if res and res != "":
-        logger.error(res)
         freqs = wordfreq(res)
-        logger.error(str(freqs))
         for num, key in freqs:
-            logger.error(key)
-            logger.error(Word.objects.filter(word=key).count())
             if Word.objects.filter(word=key).count() == 0:
                 Word.objects.create(word=key, charcount=num)
             else:
                 word = Word.objects.get(word=key)
                 word.charcount += num
                 word.save()
-            logger.error("updated word")
 
 
 @api_view(['POST'])
@@ -353,7 +348,6 @@ def approve(request, id):
         updateCloud(instance.responseAffected)
         updateCloud(instance.responseDoneDifferently)
     except:
-        logger.critical(traceback.format_exc())
         return JsonResponse({"message": f'{id} has been approved, but cloud failed'})
 
     return JsonResponse({"success": f'{id} has been approved'})
