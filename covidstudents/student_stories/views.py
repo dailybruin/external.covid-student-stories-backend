@@ -107,9 +107,11 @@ class StoryView(APIView):
             else query
 
         paginator = Paginator(query, 10)
-        i = min(i, paginator.num_pages)
+        if i > paginator.num_pages:
+            return http.HttpResponse({"totalcount": query.count(), "data": []}, content_type="text/json-comment-filtered")
+
         post_list = serializers.serialize('json', list(paginator.page(i)))
-        return http.HttpResponse(post_list, content_type="text/json-comment-filtered")
+        return http.HttpResponse({"totalcount": query.count(), "data": post_list}, content_type="text/json-comment-filtered")
 
 
 class ReactView(APIView):
