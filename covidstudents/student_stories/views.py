@@ -160,24 +160,33 @@ class CreateStoryView(APIView):
                                  major=data["major"],
                                  year=data["year"],
                                  ethnicity=data["ethnicity"],
-                                 state=data["state"],
+                                 state=data["state"] if data.get(
+                                     "state") else None,
                                  city=data["city"],
-                                 country=data["country"],
+                                 country=data["country"] if data.get(
+                                     "country") else None,
                                  worryFinancial=data["worryFinancial"],
                                  worryHousing=data["worryHousing"],
                                  worryAcademic=data["worryAcademic"],
                                  worryGovernment=data["worryGovernment"],
                                  worryPhysical=data["worryPhysical"],
                                  worryMental=data["worryMental"],
-                                 responseCommunity=data["responseCommunity"][:500],
-                                 responseAffected=data["repsonseAffected"][:1000],
-                                 responseElse=data["responseElse"][:10000],
+                                 responseCommunity=data["responseCommunity"][:500] if data.get(
+                                     "responseCommunity") else None,
+                                 responseAffected=data["repsonseAffected"][:1000] if data.get(
+                                     "responseAffected") else None,
+                                 responseElse=data["responseElse"][:10000] if data.get(
+                                     "responseElse") else None,
                                  comfortablePublish=data["comfortablePublish"],
                                  knowPositive=data["knowPositive"],
                                  currentLocation=data["currentLocation"],
-                                 responseDoneDifferently=data["responseDoneDifferently"][:500],
-                                 mediaLinks=data["mediaLinks"],
-                                 artCredit=data["artCredit"])
+                                 responseDoneDifferently=data["responseDoneDifferently"][:500] if data.get(
+                                     "responseDoneDifferently") else None,
+                                 mediaLinks=data["mediaLinks"] if data.get(
+                                     "mediaLinks") else None,
+                                 artCredit=data["artCredit"] if data.get(
+                                     "artCredit") else None,
+                                 approvalState='undecided' if data["comfortablePublish"] == 'Y' else 'rejected')
             return http.JsonResponse(data)
         except:
             return http.JsonResponse({"error": "Invalid post request", "data": request.data})
