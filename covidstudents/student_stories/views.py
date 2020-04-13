@@ -61,9 +61,11 @@ class StoryView(APIView):
             school_query = None
             for school in schools:
                 try:
-                    school_query |= Q(school=school.replace("'", ""))
+                    school_query |= Q(school=school.replace(
+                        "_", " ").replace("'", ""))
                 except:
-                    school_query = Q(school=school.replace("'", ""))
+                    school_query = Q(school=school.replace(
+                        "_", " ").replace("'", ""))
             query = query.filter(school_query)
 
         if years:
@@ -81,9 +83,11 @@ class StoryView(APIView):
             major_query = None
             for major in majors:
                 try:
-                    major_query |= Q(major=major.replace("'", ""))
+                    major_query |= Q(major=major.replace(
+                        "_", " ").replace("'", ""))
                 except:
-                    major_query = Q(major=major.replace("'", ""))
+                    major_query = Q(major=major.replace(
+                        "_", " ").replace("'", ""))
             query = query.filter(major_query)
 
         query = query.filter(created__gt=datetime.now() - timedelta(hours=8)).order_by("-reactTotal") if sort == 2 \
