@@ -160,17 +160,20 @@ class ReactView(APIView):
             post.save()
             return http.JsonResponse({"message": "React update successful"})
         except:
+            logger.error(traceback.format_exc())
             return http.JsonResponse({"error": "React update invalid"})
 
 
 def truncate(string, length):
+    if string is None:
+        return None
     if len(string) > length:
         return string[0: length]
     return string
 
 
 class CreateStoryView(APIView):
-    
+
     def post(self, request):
         try:
             data = request.data
@@ -201,6 +204,7 @@ class CreateStoryView(APIView):
 
             return http.JsonResponse(data)
         except:
+            logger.error(traceback.format_exc())
             return http.JsonResponse({"error": "Invalid post request", "data": request.data})
 
 
@@ -355,6 +359,7 @@ def approve(request, id):
         updateCloud(instance.responseAffected)
         updateCloud(instance.responseDoneDifferently)
     except:
+        logger.error(traceback.format_exc())
         return JsonResponse({"message": f'{id} has been approved, but cloud failed'})
 
     return JsonResponse({"success": f'{id} has been approved'})
