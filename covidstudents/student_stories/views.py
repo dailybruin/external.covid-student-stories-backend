@@ -108,10 +108,10 @@ class StoryView(APIView):
 
         paginator = Paginator(query, 10)
         if i > paginator.num_pages:
-            return http.HttpResponse({"totalcount": query.count(), "data": []}, content_type="text/json-comment-filtered")
+            return http.JsonResponse([], safe=False)
 
         post_list = serializers.serialize('json', list(paginator.page(i)))
-        return http.HttpResponse({"totalcount": query.count(), "data": post_list}, content_type="text/json-comment-filtered")
+        return http.HttpResponse(post_list, content_type="text/json-comment-filtered")
 
 
 class ReactView(APIView):
@@ -320,12 +320,12 @@ def updateCloud(res):
     if res and res != "":
         freqs = wordfreq(res)
         for num, key in freqs:
-            try:
+            if Word.objects.filter(word=key).count() == 0:
+                Word.objects.create(word=key, charcount=num)
+            else:
                 word = Word.objects.get(word=key)
                 word.charcount += num
                 word.save()
-            except:
-                Word.objects.create(word=key, charcount=num)
 
 
 @api_view(['POST'])
