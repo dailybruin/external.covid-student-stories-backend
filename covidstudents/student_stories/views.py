@@ -263,7 +263,7 @@ def wordfreq(string):
             stopwords.add(word)
 
     # Clean text and lower case all words
-    for char in "1234567890-.,\n":
+    for char in "'’1234567890-.,\n":
         string = string.replace(char, " ")
     string = string.lower()
 
@@ -317,6 +317,18 @@ def admin_table_page(request):
     )
 
 
+def updateCloud(res):
+    if res and res != "":
+        freqs = wordfreq(res)
+        for num, key in freqs:
+            try:
+                word = Word.objects.get(word=key)
+                word.charcount += num
+                word.save()
+            except:
+                Word.objects.create(word=key, charcount=num)
+
+
 @api_view(['POST'])
 def approve(request, id):
     if not request.user.is_authenticated:
@@ -326,21 +338,15 @@ def approve(request, id):
     instance.approvalState = 'approved'
     instance.save()
 
-    def updateCloud(res):
-        if res and res != "":
-            freqs = wordfreq(res)
-            for num, key in freqs:
-                try:
-                    word = Word.objects.get(word=key)
-                    word.charcount += num
-                    word.save()
-                except:
-                    Word.objects.create(word=key, charcount=num)
-
-    updateCloud(instance.responseElse)
-    updateCloud(instance.responseCommunity)
-    updateCloud(instance.responseAffected)
-    updateCloud(instance.responseDoneDifferently)
+    try:
+        instance = get_object_or_404(Story, id=id)
+        updateCloud(instance.responseElse)
+        updateCloud(instance.responseCommunity)
+        updateCloud(instance.responseAffected)
+        updateCloud(instance.responseDoneDifferently)
+        instance.save()
+    except:
+        return JsonResponse({"message": f'{id} has been approved, but cloud failed'})
 
     return JsonResponse({"success": f'{id} has been approved'})
 
