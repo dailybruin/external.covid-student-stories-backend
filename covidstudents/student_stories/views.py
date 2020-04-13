@@ -94,7 +94,7 @@ class StoryView(APIView):
                         "_", " ").replace("'", ""))
             query = query.filter(major_query)
 
-        query = query.filter(created__gt=datetime.now() - timedelta(hours=8)).order_by("-reactTotal") if sort == 2 \
+        query = query.filter(timestamp__gt=datetime.now() - timedelta(hours=8)).order_by("-reactTotal") if sort == 2 \
             else query.order_by("-reactTotal") if sort == 1 \
             else query.order_by("-timestamp")
 
