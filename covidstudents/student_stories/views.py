@@ -53,7 +53,8 @@ class StoryView(APIView):
         diffFilter = Q(responseDoneDifferently__isnull=True) | Q(
             responseDoneDifferently__exact='')
 
-        query = Story.objects.exclude(
+        query = Story.objects.filter(approvalState="approved")
+        query = query.exclude(
             commFilter & affectFilter & elseFilter & diffFilter)
 
         if schools:
