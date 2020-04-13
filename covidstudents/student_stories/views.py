@@ -13,9 +13,11 @@ from django.urls import reverse
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import ensure_csrf_cookie
+from rest_framework.decorators import api_view
 import logging
 import traceback
 logger = logging.getLogger('scheduler')
+from django.views.decorators.csrf import csrf_exempt, csrf_protect
 
 
 class TestView(APIView):
@@ -172,40 +174,42 @@ def truncate(string, length):
     return string
 
 
-class CreateStoryView(APIView):
 
-    def post(self, request):
-        try:
-            data = request.data
-            Story.objects.create(school=truncate(data["school"], 100),
-                                 major=truncate(data["major"], 75),
-                                 year=data["year"],
-                                 state=data.get("state"),
-                                 city=truncate(data["city"], 50),
-                                 country=truncate(data.get("country"), 50),
-                                 worryFinancial=data["worryFinancial"],
-                                 worryHousing=data["worryHousing"],
-                                 worryAcademic=data["worryAcademic"],
-                                 worryGovernment=data["worryGovernment"],
-                                 worryPhysical=data["worryPhysical"],
-                                 worryMental=data["worryMental"],
-                                 responseCommunity=data.get(
-                                     "responseCommunity"),
-                                 responseAffected=data.get("responseAffected"),
-                                 responseElse=data.get("responseElse"),
-                                 comfortablePublish=data["comfortablePublish"],
-                                 knowPositive=data["knowPositive"],
-                                 currentLocation=truncate(data["currentLocation_other"] if data[
-                                     "currentLocation"] == "" else data["currentLocation"], 50),
-                                 responseDoneDifferently=data.get(
-                                     "responseDoneDifferently"),
-                                 artCredit=data.get("artCredit"),
-                                 approvalState='undecided' if data["comfortablePublish"] == 'Y' else 'rejected')
 
-            return http.JsonResponse(data)
-        except:
-            logger.error(traceback.format_exc())
-            return http.JsonResponse({"error": "Invalid post request", "data": request.data})
+@csrf_exempt
+def create_post(request):
+    try:
+        data = request.POST
+        Story.objects.create(school=truncate(data["school"], 100),
+                             major=truncate(data["major"], 75),
+                             year=data["year"],
+                             state=data.get("state"),
+                             city=truncate(data["city"], 50),
+                             country=truncate(data.get("country"), 50),
+                             worryFinancial=data["worryFinancial"],
+                             worryHousing=data["worryHousing"],
+                             worryAcademic=data["worryAcademic"],
+                             worryGovernment=data["worryGovernment"],
+                             worryPhysical=data["worryPhysical"],
+                             worryMental=data["worryMental"],
+                             responseCommunity=data.get(
+                                 "responseCommunity"),
+                             responseAffected=data.get("responseAffected"),
+                             responseElse=data.get("responseElse"),
+                             comfortablePublish=data["comfortablePublish"],
+                             knowPositive=data["knowPositive"],
+                             currentLocation=truncate(data["currentLocation_other"] if data[
+                                 "currentLocation"] == "" else data["currentLocation"], 50),
+                             responseDoneDifferently=data.get(
+                                 "responseDoneDifferently"),
+                             artCredit=data.get("artCredit"),
+                             approvalState='undecided' if data["comfortablePublish"] == 'Y' else 'rejected')
+
+        return http.HttpResponse("Hello ");
+        #return http.JsonResponse(data)
+    except:
+        logger.error(traceback.format_exc())
+        return http.HttpResponse("Hello failed")
 
 
 class StatisticsView(APIView):

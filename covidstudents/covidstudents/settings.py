@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 import os
 import environ
 
+from time  import gmtime, strftime
+
 
 # environment variable reading set up
 root = environ.Path(__file__) - 2  # two folder back (/a/b/ - 2 = /)
@@ -149,6 +151,8 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
+showtime = strftime("%Y-%m-%d %H:%M:%S", gmtime())
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -175,7 +179,7 @@ LOGGING = {
         'logfile': {
             'level': 'INFO',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(BASE_DIR, 'meow.log'),
+            'filename': os.path.join(BASE_DIR, 'meow.log' if DEBUG else "studentstories-"+showtime+".log"),
             'maxBytes': 1024*1024*3,  # 3MB
             'formatter': 'simple_server'
         },
