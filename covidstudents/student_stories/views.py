@@ -32,9 +32,9 @@ class StoryView(APIView):
         majors = request.GET.get("major", None)
         # 0 for none, 1 for CA, 2 for OOS, 3 for international
         try:
-            sort = max(int(request.GET.get("home", 0)), 0)
+            home = max(int(request.GET.get("home", 0)), 0)
         except:
-            sort = 0
+            home = 0
         # 0 for latest, 1 for most top, 2 for hot
         try:
             sort = max(int(request.GET.get("sort", 0)), 0)
