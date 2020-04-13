@@ -266,7 +266,7 @@ def wordfreq(string):
             stopwords.add(word)
 
     # Clean text and lower case all words
-    for char in "'’1234567890-.,\n":
+    for char in "1234567890-.,\n":
         string = string.replace(char, " ")
     string = string.lower()
 
