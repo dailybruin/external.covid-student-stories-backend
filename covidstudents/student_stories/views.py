@@ -258,6 +258,7 @@ class StatisticsView(APIView):
 def wordfreq(string):
     # all the words to filter out...
     stopwords = set()
+    logger("JAY 261")
     with open("stopwords.txt", "r") as f:
         for line in f:
             word = line[:-1]
@@ -267,17 +268,17 @@ def wordfreq(string):
     for char in "'’1234567890-.,\n":
         string = string.replace(char, " ")
     string = string.lower()
-
+    logger("JAY 271")
     # turn string into array of words
     wordlist = string.split()
-
+    logger("JAY 274")
     # filter out garbage words
     wordlist = [w for w in wordlist if w not in stopwords]
-
+    logger("JAY 277")
     # Given a list of words, return a dictionary of word-frequency pairs.
     wordfreq = [wordlist.count(p) for p in wordlist]
     wordfreq_map = dict(list(zip(wordlist, wordfreq)))
-
+    logger("JAY 281")
     # sort in descending order
     aux = [(wordfreq_map[key], key) for key in wordfreq_map]
     aux.sort()
@@ -322,7 +323,7 @@ def updateCloud(res):
     if res and res != "":
         logger.error(res)
         freqs = wordfreq(res)
-        logger.error(freqs)
+        logger.error(str(freqs))
         for num, key in freqs:
             logger.error(key)
             logger.error(Word.objects.filter(word=key).count())
