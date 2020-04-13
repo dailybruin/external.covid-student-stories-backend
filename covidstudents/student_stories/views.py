@@ -1,3 +1,4 @@
+from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.shortcuts import render
 from django import http
 from django.db.models import Q
@@ -17,7 +18,6 @@ from rest_framework.decorators import api_view
 import logging
 import traceback
 logger = logging.getLogger('scheduler')
-from django.views.decorators.csrf import csrf_exempt, csrf_protect
 
 
 class TestView(APIView):
@@ -96,13 +96,13 @@ class StoryView(APIView):
                         "_", " ").replace("'", ""))
             query = query.filter(major_query)
 
-        query = query.filter(timestamp__gt=datetime.now() - timedelta(hours=8)).order_by("-reactTotal") if sort == 2 \
+        query = query.filter(timestamp__gt=datetime.now() - timedelta(hours=72)).order_by("-reactTotal") if sort == 2 \
             else query.order_by("-reactTotal") if sort == 1 \
             else query.order_by("-timestamp")
 
-        query = query.filter(state="California") if sort == 1 \
-            else query.exclude(state="California").filter(Q(country="United States of America (USA)") | Q(state__isnull=False)) if sort == 2 \
-            else query.filter(country__isnull=False).exclude(country="United States of America (USA)") if sort == 3 \
+        query = query.filter(state="California") if home == 1 \
+            else query.exclude(state="California").filter(Q(country="United States of America (USA)") | Q(state__isnull=False) | ~Q(state__exact='')) if home == 2 \
+            else query.exclude(Q(country__isnull=True) | Q(country__exact='')).exclude(country="United States of America (USA)") if home == 3 \
             else query
 
         query = query.order_by("-reactLove") if reax == 1 \
@@ -174,8 +174,6 @@ def truncate(string, length):
     return string
 
 
-
-
 @csrf_exempt
 def create_post(request):
     try:
@@ -205,8 +203,8 @@ def create_post(request):
                              artCredit=data.get("artCredit"),
                              approvalState='undecided' if data["comfortablePublish"] == 'Y' else 'rejected')
 
-        return http.HttpResponse("Hello ");
-        #return http.JsonResponse(data)
+        return http.HttpResponse("Hello ")
+        # return http.JsonResponse(data)
     except:
         logger.error(traceback.format_exc())
         return http.HttpResponse("Hello failed")
