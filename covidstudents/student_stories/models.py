@@ -34,7 +34,6 @@ class Story(models.Model):
     school = models.CharField(max_length=50)
     major = models.CharField(max_length=75)
     year = models.CharField(max_length=2, choices=YEAR_IN_SCHOOL_CHOICES)
-    ethnicity = models.CharField(max_length=50)
     state = models.CharField(max_length=50, null=True)
     city = models.CharField(max_length=50)
     country = models.CharField(max_length=50, null=True)
@@ -58,4 +57,5 @@ class Story(models.Model):
     reactUp = models.IntegerField(default=0)
     reactAngry = models.IntegerField(default=0)
     reactTotal = models.IntegerField(default=0)
-    approvalState = models.CharField(max_length=9,choices=APPROVAL_STATES, default='undecided')
+    approvalState = models.CharField(
+        max_length=9, choices=APPROVAL_STATES, default='undecided')

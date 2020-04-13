@@ -163,11 +163,9 @@ class CreateStoryView(APIView):
             Story.objects.create(school=data["school"],
                                  major=data["major"],
                                  year=data["year"],
-                                 state=data["state"] if data.get(
-                                     "state") else None,
+                                 state=data.get("state"),
                                  city=data["city"],
-                                 country=data["country"] if data.get(
-                                     "country") else None,
+                                 country=data.get("country"),
                                  worryFinancial=data["worryFinancial"],
                                  worryHousing=data["worryHousing"],
                                  worryAcademic=data["worryAcademic"],
@@ -186,10 +184,8 @@ class CreateStoryView(APIView):
                                      "currentLocation"] == "" else data["currentLocation"],
                                  responseDoneDifferently=data["responseDoneDifferently"][:500] if data.get(
                                      "responseDoneDifferently") else None,
-                                 mediaLinks=data["mediaLinks"] if data.get(
-                                     "mediaLinks") else None,
-                                 artCredit=data["artCredit"] if data.get(
-                                     "artCredit") else None,
+                                 mediaLinks=data.get("mediaLinks"),
+                                 artCredit=data.get("artCredit"),
                                  approvalState='undecided' if data["comfortablePublish"] == 'Y' else 'rejected')
             return http.JsonResponse(data)
         except:
