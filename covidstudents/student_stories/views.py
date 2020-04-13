@@ -186,7 +186,6 @@ class CreateStoryView(APIView):
                                      "currentLocation"] == "" else data["currentLocation"],
                                  responseDoneDifferently=data.get(
                                      "responseDoneDifferently"),
-                                 mediaLinks=data.get("mediaLinks"),
                                  artCredit=data.get("artCredit"),
                                  approvalState='undecided' if data["comfortablePublish"] == 'Y' else 'rejected')
 
