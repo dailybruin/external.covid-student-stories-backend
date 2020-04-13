@@ -36,7 +36,7 @@ class Story(models.Model):
     ]
 
     timestamp = models.DateTimeField(auto_now_add=True)
-    school = models.CharField(max_length=50)
+    school = models.CharField(max_length=100)
     major = models.CharField(max_length=75)
     year = models.CharField(max_length=2, choices=YEAR_IN_SCHOOL_CHOICES)
     state = models.CharField(max_length=50, null=True)
@@ -55,7 +55,7 @@ class Story(models.Model):
     knowPositive = models.CharField(max_length=1, choices=YES_OR_NO)
     currentLocation = models.CharField(max_length=50)
     responseDoneDifferently = models.TextField(null=True)
-    artCredit = models.CharField(max_length=50, null=True)
+    artCredit = models.TextField(null=True)
     reactLove = models.IntegerField(default=0)
     reactSad = models.IntegerField(default=0)
     reactUp = models.IntegerField(default=0)

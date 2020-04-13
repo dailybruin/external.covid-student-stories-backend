@@ -20,7 +20,7 @@ logger = logging.getLogger('scheduler')
 
 class TestView(APIView):
     def get(self, request):
-        return http.HttpResponse("Hello World")
+        return http.HttpResponse("Hello " + str(request.META.get('HTTP_X_FORWARDED_FOR')))
 
 
 class StoryView(APIView):
@@ -163,16 +163,24 @@ class ReactView(APIView):
             return http.JsonResponse({"error": "React update invalid"})
 
 
+def truncate(string, length):
+    if len(string) > length:
+        return string[0: length]
+    return string
+
+
 class CreateStoryView(APIView):
+    throttle_scope = 'form'
+
     def post(self, request):
         try:
             data = request.data
-            Story.objects.create(school=data["school"],
-                                 major=data["major"],
+            Story.objects.create(school=truncate(data["school"], 100),
+                                 major=truncate(data["major"], 75),
                                  year=data["year"],
                                  state=data.get("state"),
-                                 city=data["city"],
-                                 country=data.get("country"),
+                                 city=truncate(data["city"], 50),
+                                 country=truncate(data.get("country"), 50),
                                  worryFinancial=data["worryFinancial"],
                                  worryHousing=data["worryHousing"],
                                  worryAcademic=data["worryAcademic"],
@@ -185,8 +193,8 @@ class CreateStoryView(APIView):
                                  responseElse=data.get("responseElse"),
                                  comfortablePublish=data["comfortablePublish"],
                                  knowPositive=data["knowPositive"],
-                                 currentLocation=data["currentLocation_other"] if data[
-                                     "currentLocation"] == "" else data["currentLocation"],
+                                 currentLocation=truncate(data["currentLocation_other"] if data[
+                                     "currentLocation"] == "" else data["currentLocation"], 50),
                                  responseDoneDifferently=data.get(
                                      "responseDoneDifferently"),
                                  artCredit=data.get("artCredit"),
