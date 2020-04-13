@@ -163,7 +163,6 @@ class CreateStoryView(APIView):
             Story.objects.create(school=data["school"],
                                  major=data["major"],
                                  year=data["year"],
-                                 ethnicity=data["ethnicity"],
                                  state=data["state"] if data.get(
                                      "state") else None,
                                  city=data["city"],
@@ -183,7 +182,8 @@ class CreateStoryView(APIView):
                                      "responseElse") else None,
                                  comfortablePublish=data["comfortablePublish"],
                                  knowPositive=data["knowPositive"],
-                                 currentLocation=data["currentLocation"],
+                                 currentLocation=data["currentLocation_other"] if data[
+                                     "currentLocation"] == "" else data["currentLocation"],
                                  responseDoneDifferently=data["responseDoneDifferently"][:500] if data.get(
                                      "responseDoneDifferently") else None,
                                  mediaLinks=data["mediaLinks"] if data.get(
