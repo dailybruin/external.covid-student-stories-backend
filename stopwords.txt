@@ -1,6 +1,7 @@
 a
 about
 above
+actually
 across
 after
 afterwards
@@ -70,7 +71,10 @@ detail
 did
 do
 done
+don't
+don\'t
 down
+doing
 due
 during
 each
@@ -89,6 +93,7 @@ every
 everyone
 everything
 everywhere
+especially
 except
 few
 fifteen
@@ -109,6 +114,7 @@ front
 full
 further
 get
+getting
 give
 go
 had
@@ -145,7 +151,10 @@ it
 its
 it's
 it's'
+it\'s
 i'm
+i\'ve
+i've
 itself
 just
 keep
@@ -222,11 +231,13 @@ really
 s
 same
 see
+seeing
 seem
 seemed
 seeming
 seems
 serious
+seriously
 several
 she
 should
@@ -247,7 +258,7 @@ sometimes
 somewhere
 still
 such
-system
+sure
 take
 taken
 taking
