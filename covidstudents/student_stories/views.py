@@ -58,7 +58,7 @@ class StoryView(APIView):
         diffFilter = Q(responseDoneDifferently__isnull=True) | Q(
             responseDoneDifferently__exact='')
 
-        query = Story.objects.filter(approvalState="approved")
+        query = Story.objects.filter(approvalState="approved", comfortablePublish='Y')
         query = query.exclude(
             commFilter & affectFilter & elseFilter & diffFilter)
 
@@ -200,7 +200,7 @@ def create_post(request):
                              responseDoneDifferently=data.get(
                                  "responseDoneDifferently"),
                              artCredit=data.get("artCredit"),
-                             approvalState='undecided' if data.get("comfortablePublish") == 'Y' else 'rejected')
+                             approvalState='undecided')
 
         # return http.HttpResponse("Hello ")
         return http.JsonResponse(data)
