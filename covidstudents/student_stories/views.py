@@ -3,11 +3,12 @@ from django.shortcuts import render
 from django import http
 from django.db.models import Q
 from django.core import serializers
-from .models import Story, Word
+from .models import Story, Word, Coordinates
 from django.core.paginator import Paginator
 from rest_framework.views import APIView
 from datetime import datetime, timedelta
 from rest_framework.decorators import api_view
+from geopy.geocoders import MapBox
 
 from django.shortcuts import redirect, render
 from django.urls import reverse
@@ -58,7 +59,8 @@ class StoryView(APIView):
         diffFilter = Q(responseDoneDifferently__isnull=True) | Q(
             responseDoneDifferently__exact='')
 
-        query = Story.objects.filter(approvalState="approved", comfortablePublish='Y')
+        query = Story.objects.filter(
+            approvalState="approved", comfortablePublish='Y')
         query = query.exclude(
             commFilter & affectFilter & elseFilter & diffFilter)
 
@@ -375,3 +377,51 @@ def reject(request, id):
     instance.approvalState = 'rejected'
     instance.save()
     return JsonResponse({"success": f'{id} has been rejected'})
+
+
+class MapView(APIView):
+    def get(self, request):
+        mapbox = MapBox(
+            "pk.eyJ1IjoiaHVhbmdrYTk3IiwiYSI6ImNrMmw4c2V2YzA0bWUzZG83M2EzN2NjZ2wifQ.ICymOqR-bnQFjDcFtS3xCA")
+
+        query = Story.objects.filter(approvalState="approved").filter(
+            Q(country="United States of America (USA)") | Q(country__isnull=True) | Q(country=""))
+
+        geojson = {"type": "FeatureCollection", "features": []}
+
+        location_queries = [story.city + " " + story.state for story in query]
+
+        for i, loc in enumerate(location_queries):
+            feature = {"type": "Feature",
+                       "geometry": {
+                           "type": "Point"
+                       },
+                       "properties": {},
+                       "id": i}
+
+            if Coordinates.objects.filter(coordquery=loc).count() == 0:
+                code = mapbox.geocode(loc, country="US")
+                if code is None:
+                    continue
+
+                lat = code.latitude
+                lon = code.longitude
+                Coordinates.objects.create(
+                    coordquery=loc, longitude=lon, latitude=lat)
+            else:
+                coords = Coordinates.objects.get(coordquery=loc)
+                lat = coords.latitude
+                lon = coords.longitude
+            feature["geometry"]["coordinates"] = [lon, lat]
+
+            loc_breakdown = loc.split()
+            if len(loc_breakdown) > 0:
+                feature["properties"]["city"] = loc_breakdown[0]
+            if len(loc_breakdown) > 1:
+                feature["properties"]["state"] = loc_breakdown[1]
+            if len(loc_breakdown) > 2:
+                feature["properties"]["country"] = loc_breakdown[2]
+
+            geojson["features"].append(feature)
+
+        return http.JsonResponse(geojson)

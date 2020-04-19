@@ -9,5 +9,6 @@ urlpatterns = [
     path('react/', views.ReactView.as_view()),
     path('vetting-table/', views.admin_table_page, name="vetting-table"),
     path('vetting-table/approve/<int:id>', views.approve),
-    path('vetting-table/reject/<int:id>', views.reject)
+    path('vetting-table/reject/<int:id>', views.reject),
+    path('features/', views.MapView.as_view())
 ]

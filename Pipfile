@@ -39,6 +39,7 @@ django-cors-headers = "==3.2.1"
 Django = "==3.0.3"
 Pillow = "==7.0.0"
 PyJWT = "==1.7.1"
+geopy = "*"
 
 [requires]
 python_version = "3.8"

@@ -6,6 +6,13 @@ class Word(models.Model):
     charcount = models.IntegerField(default=1)
 
 
+class Coordinates(models.Model):
+    coordquery = models.CharField(max_length=150, blank=True)
+
+    longitude = models.DecimalField()
+    latitude = models.DecimalField()
+
+
 class Story(models.Model):
     YEAR_IN_SCHOOL_CHOICES = [
         ('HS', 'high school'),
