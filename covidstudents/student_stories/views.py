@@ -393,11 +393,11 @@ class MapView(APIView):
         for story in query:
             loc = []
             if story.city is not None and story.city != "":
-                loc.append(story.city)
+                loc.append(story.city.replace(" ", "_"))
             if story.state is not None and story.state != "":
-                loc.append(story.state)
+                loc.append(story.state.replace(" ", "_"))
             if story.country is not None and story.country != "":
-                loc.append(story.country)
+                loc.append(story.country.replace(" ", "_"))
             location_queries.append(" ".join(loc))
 
         for i, loc in enumerate(location_queries):
@@ -410,7 +410,7 @@ class MapView(APIView):
 
             if Coordinates.objects.filter(coordquery=loc).count() == 0:
                 try:
-                    code = mapbox.geocode(loc, country="US")
+                    code = mapbox.geocode(loc.replace("_", " "), country="US")
                 except:
                     logger.info(loc)
                     continue
@@ -430,11 +430,14 @@ class MapView(APIView):
 
             loc_breakdown = loc.split()
             if len(loc_breakdown) > 0:
-                feature["properties"]["city"] = loc_breakdown[0]
+                feature["properties"]["city"] = loc_breakdown[0].replace(
+                    "_", " ")
             if len(loc_breakdown) > 1:
-                feature["properties"]["state"] = loc_breakdown[1]
+                feature["properties"]["state"] = loc_breakdown[1].replace(
+                    "_", " ")
             if len(loc_breakdown) > 2:
-                feature["properties"]["country"] = loc_breakdown[2]
+                feature["properties"]["country"] = loc_breakdown[2].replace(
+                    "_", " ")
 
             geojson["features"].append(feature)
 
