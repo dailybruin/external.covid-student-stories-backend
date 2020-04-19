@@ -389,7 +389,16 @@ class MapView(APIView):
 
         geojson = {"type": "FeatureCollection", "features": []}
 
-        location_queries = [story.city + " " + story.state for story in query]
+        location_queries = []
+        for story in query:
+            loc = []
+            if story.city is not None and story.city != "":
+                loc.append(story.city)
+            if story.state is not None and story.state != "":
+                loc.append(story.state)
+            if story.country is not None and story.country != "":
+                loc.append(story.country)
+            location_queries.append(" ".join(loc))
 
         for i, loc in enumerate(location_queries):
             feature = {"type": "Feature",
