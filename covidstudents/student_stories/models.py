@@ -9,8 +9,8 @@ class Word(models.Model):
 class Coordinates(models.Model):
     coordquery = models.CharField(max_length=150, blank=True)
 
-    longitude = models.DecimalField()
-    latitude = models.DecimalField()
+    longitude = models.FloatField()
+    latitude = models.FloatField()
 
 
 class Story(models.Model):
