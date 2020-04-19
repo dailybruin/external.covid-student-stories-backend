@@ -409,7 +409,12 @@ class MapView(APIView):
                        "id": i}
 
             if Coordinates.objects.filter(coordquery=loc).count() == 0:
-                code = mapbox.geocode(loc, country="US")
+                try:
+                    code = mapbox.geocode(loc, country="US")
+                except:
+                    logger.info(loc)
+                    continue
+
                 if code is None:
                     continue
 
