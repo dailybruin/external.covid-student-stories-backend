@@ -384,8 +384,7 @@ class MapView(APIView):
         mapbox = MapBox(
             "pk.eyJ1IjoiaHVhbmdrYTk3IiwiYSI6ImNrMmw4c2V2YzA0bWUzZG83M2EzN2NjZ2wifQ.ICymOqR-bnQFjDcFtS3xCA")
 
-        query = Story.objects.filter(approvalState="approved").filter(
-            Q(country="United States of America (USA)") | Q(country__isnull=True) | Q(country=""))
+        query = Story.objects.filter(approvalState="approved")
 
         geojson = {"type": "FeatureCollection", "features": []}
 
@@ -410,7 +409,7 @@ class MapView(APIView):
 
             if Coordinates.objects.filter(coordquery=loc).count() == 0:
                 try:
-                    code = mapbox.geocode(loc.replace("_", " "), country="US")
+                    code = mapbox.geocode(loc.replace("_", " "))
                 except:
                     logger.info(loc)
                     continue
