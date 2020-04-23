@@ -180,6 +180,7 @@ def truncate(string, length):
 def create_post(request):
     try:
         data = request.POST
+        logger.error(str(data))
         Story.objects.create(school=truncate(data.get("school"), 100),
                              major=truncate(data.get("major"), 75),
                              year=data.get("year"),
